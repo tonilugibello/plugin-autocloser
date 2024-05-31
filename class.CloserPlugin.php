@@ -37,6 +37,7 @@ class CloserPlugin extends Plugin {
      *
      * @var boolean
      */
+    //const DEBUG = FALSE;
     const DEBUG = FALSE;
 
     /**
@@ -231,6 +232,8 @@ class CloserPlugin extends Plugin {
      */
     private function change_ticket_status(Ticket $ticket, TicketStatus $new_status) {
 	 global $ost;
+     
+
         if (self::DEBUG) {
         	$this->LOG[]=
                     "Setting status " . $new_status->getState() .
@@ -240,6 +243,19 @@ class CloserPlugin extends Plugin {
         // Start by setting the last update and closed timestamps to now
         $ticket->closed = $ticket->lastupdate = SqlFunction::NOW();
 
+        //Inzio modifica Antonio
+        $isRobotEnabled = $config->get('assign-robot') ? $config->get('assign-robot') : FALSE;
+        //Check if the assign-robot-status-change is checked and if robot exist.
+
+        $robot = $config->get('robot-account');
+        $robot = ($robot>0)? $robot = Staff::lookup($robot) : null;
+        if($robot &&  $isRobotEnabled){
+            //if so, the ticket is assigned with the robot account
+            $ticket->assignToStaff($robot, "Assegnazione per chiusura automatica", FALSE);
+        }
+
+        //fine modifica Antonio
+        
         // Remove any duedate or overdue flags
         $ticket->duedate = null;
         $ticket->clearOverdue(FALSE); // flag prevents saving, we'll do that

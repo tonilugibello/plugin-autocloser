@@ -191,6 +191,12 @@ class CloserPluginConfig extends PluginConfig {
                     'hint' => $__(
                             'Select account for sending replies, account can be locked, still works.')
                         ]),
+                'assign-robot' => new BooleanField(
+                        [
+                    'default' => FALSE,
+                    'label' => $__('Assign tickets to robot account.'),
+                    'hint' => $__('If no account is selected this field doesn\'t affect the normal flow')
+                        ]),
                 'admin-reply' => new ChoiceField(
                         [
                     'label' => $__('Auto-Reply Canned Response'),
