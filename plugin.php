@@ -1,6 +1,6 @@
 <?php return array(
  'id' => 'clonemeagain:autocloser', # notrans
- 'version' => '3.1.1',
+ 'version' => '3.1.2',
  'name' => 'Ticket Closer',
  'author' => 'clonemeagain@gmail.com',
  'description' => 'Changes ticket statuses based on age.',
@@ -19,6 +19,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.1.2] - 2024-06-03 (Antonio Lugibello)
+### Added
+- Added possibily to assign ticket to the robot account on status change.
+### Fixed
+- Fixed the control on the result of the ticket's isCloseable() method.
 
 ## [3.1.1] - 2023-01-15
 ### Added

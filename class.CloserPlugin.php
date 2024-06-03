@@ -8,6 +8,7 @@
  * @see https://github.com/clonemeagain/plugin-autocloser
  * @fork by Cartmega <www.cartmega.com>
  * @see https://github.com/Cartmega/plugin-autocloser 
+ * @fork by Antonio Lugibello
  */
 foreach ([
  'canned',
@@ -38,7 +39,7 @@ class CloserPlugin extends Plugin {
      * @var boolean
      */
     //const DEBUG = FALSE;
-    const DEBUG = FALSE;
+    const DEBUG = TRUE;
 
     /**
      * Keeps all log entries for each run
@@ -137,6 +138,15 @@ class CloserPlugin extends Plugin {
                     $robot = $config->get('robot-account');
                     $robot = ($robot>0)? $robot = Staff::lookup($robot) : null;
 
+                    //Inizio modifica Antonio
+                    // Get if the robot must be assigned
+                    $assign_robot = $config->get("assign-robot");
+                    if (self::DEBUG) {
+                        $this->LOG[]="This is assign-robot: " . $assign_robot ? "TRUE" : "FALSE"; 
+                    }
+                    
+                    //Fine modifica Antonio
+
                     // Go through each ticket ID:
                     foreach ($open_ticket_ids as $ticket_id) {
 
@@ -147,11 +157,19 @@ class CloserPlugin extends Plugin {
                             continue;
                         }
 
+                        if (self::DEBUG) {
+                            $this->LOG[]="Closable";
+                            $this->LOG[]=$ticket->isCloseable();
+                            $this-> LOG[]="OPEN TASK COUNT:" . $ticket->getNumOpenTasks();
+
+                        }
+
                         // Some tickets aren't closeable.. either because of open tasks, or missing fields.
                         // we can therefore only work on closeable tickets.
                         // This won't close it, nor will it send a response, so it will likely trigger again
                         // on the next run.. TRUE means send an alert.
-                        if (!$ticket->isCloseable()) {
+                     
+                        if ($ticket->isCloseable() !== true) { //Changed from !$ticket->isCloseable() to $ticket->isCloseable() !== true because the method can return true or string
                             $ticket->LogNote(__('Error auto-changing status'), __(
                                             'Unable to change this ticket\'s status to ' .
                                             $new_status->getState()), self::PLUGIN_NAME, TRUE);
@@ -169,8 +187,9 @@ class CloserPlugin extends Plugin {
                             $this->post_reply($ticket, $new_status, $admin_reply, $robot);
                         }
 
-                        // Actually change the ticket status
-                        $this->change_ticket_status($ticket, $new_status);
+                        // Actually change the ticket status 
+                        //(Antonio Lugibello: Added robot and assign_robot as params to assign the account when status is changed)
+                        $this->change_ticket_status($ticket, $new_status, $robot, $assign_robot);
                     }
 
                     $this->print2log();
@@ -229,11 +248,12 @@ class CloserPlugin extends Plugin {
      *
      * @param Ticket $ticket
      * @param TicketStatus $new_status
+     * @param Staff $robot The robot account assigned in the configuration (Antonio Lugibello)
+     * @param bool $assign_robot In the configuration is checked if the ticket need to be assigned at status change (Antonio Lugibello)
      */
-    private function change_ticket_status(Ticket $ticket, TicketStatus $new_status) {
+    private function change_ticket_status(Ticket $ticket, TicketStatus $new_status, Staff $robot = null, bool $assign_robot = false) {
 	 global $ost;
      
-
         if (self::DEBUG) {
         	$this->LOG[]=
                     "Setting status " . $new_status->getState() .
@@ -243,15 +263,19 @@ class CloserPlugin extends Plugin {
         // Start by setting the last update and closed timestamps to now
         $ticket->closed = $ticket->lastupdate = SqlFunction::NOW();
 
-        //Inzio modifica Antonio
-        $isRobotEnabled = $config->get('assign-robot') ? $config->get('assign-robot') : FALSE;
-        //Check if the assign-robot-status-change is checked and if robot exist.
+        if (self::DEBUG) {
+        	$this->LOG[]="Robot account " . $robot->getFirstName() . $robot->getLastName();
+            $this->LOG[]="Assign robot :" . $assign_robot ? "TRUE" : "FALSE";
+                    
+        }
 
-        $robot = $config->get('robot-account');
-        $robot = ($robot>0)? $robot = Staff::lookup($robot) : null;
-        if($robot &&  $isRobotEnabled){
+        //Inzio modifica Antonio
+        if($robot){
             //if so, the ticket is assigned with the robot account
-            $ticket->assignToStaff($robot, "Assegnazione per chiusura automatica", FALSE);
+            if($assign_robot){
+                $ticket->assignToStaff($robot, "Assegnazione per chiusura automatica", false);
+            }
+
         }
 
         //fine modifica Antonio

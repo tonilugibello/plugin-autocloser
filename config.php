@@ -194,7 +194,7 @@ class CloserPluginConfig extends PluginConfig {
                 'assign-robot' => new BooleanField(
                         [
                     'default' => FALSE,
-                    'label' => $__('Assign tickets to robot account.'),
+                    'label' => $__('Assign tickets to robot account'),
                     'hint' => $__('If no account is selected this field doesn\'t affect the normal flow')
                         ]),
                 'admin-reply' => new ChoiceField(
