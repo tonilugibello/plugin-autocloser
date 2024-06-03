@@ -6,9 +6,7 @@
  *
  * @author Grizly <clonemeagain@gmail.com>
  * @see https://github.com/clonemeagain/plugin-autocloser
- * @fork by Cartmega <www.cartmega.com>
- * @see https://github.com/Cartmega/plugin-autocloser 
- * @fork by Antonio Lugibello
+ * @fork by Antonio Lugibello <antonio.lugibello@logicos.it>
  */
 foreach ([
  'canned',
@@ -39,7 +37,7 @@ class CloserPlugin extends Plugin {
      * @var boolean
      */
     //const DEBUG = FALSE;
-    const DEBUG = TRUE;
+    const DEBUG = FALSE;
 
     /**
      * Keeps all log entries for each run
@@ -138,14 +136,14 @@ class CloserPlugin extends Plugin {
                     $robot = $config->get('robot-account');
                     $robot = ($robot>0)? $robot = Staff::lookup($robot) : null;
 
-                    //Inizio modifica Antonio
+                    //Start edit Antonio Lugibello
                     // Get if the robot must be assigned
                     $assign_robot = $config->get("assign-robot");
                     if (self::DEBUG) {
                         $this->LOG[]="This is assign-robot: " . $assign_robot ? "TRUE" : "FALSE"; 
                     }
                     
-                    //Fine modifica Antonio
+                    //End edit Antonio lugibello
 
                     // Go through each ticket ID:
                     foreach ($open_ticket_ids as $ticket_id) {
@@ -269,7 +267,7 @@ class CloserPlugin extends Plugin {
                     
         }
 
-        //Inzio modifica Antonio
+        //Start edit Antonio Lugibello
         if($robot){
             //if so, the ticket is assigned with the robot account
             if($assign_robot){
@@ -278,7 +276,7 @@ class CloserPlugin extends Plugin {
 
         }
 
-        //fine modifica Antonio
+        //End edit Antonio Lugibello
         
         // Remove any duedate or overdue flags
         $ticket->duedate = null;
